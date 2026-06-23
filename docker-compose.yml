@@ -1,0 +1,38 @@
+services:
+  servico-usuarios:
+    build: ./servico-usuarios
+    healthcheck: # Sensor de vida da API
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:5000/health\")'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  servico-produtos:
+    build: ./servico-produtos
+    deploy:
+      replicas: 2 # BALANCEAMENTO DE CARGA: O Docker vai subir 2 containers disso!
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:5000/health\")'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  api-gateway:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./frontend:/usr/share/nginx/html:ro # Mapeia a pasta do front-end
+    depends_on:
+      - servico-usuarios
+      - servico-produtos
+
+  # Nosso novo Servidor de Monitoramento Profissional
+  zabbix:
+    image: zabbix/zabbix-appliance:latest
+    ports:
+      - "8081:80"    # O Dashboard do Zabbix ficará na porta 8081
+      - "10051:10051" 
+    environment:
+      - PHP_TZ=America/Cuiaba

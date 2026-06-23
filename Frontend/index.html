@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do API Gateway</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #ffffff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { color: #00ffcc; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 30px; text-align: center; }
+        .container { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; max-width: 1000px; }
+        .card { background-color: #1e1e1e; border-radius: 10px; padding: 25px; width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid #333; }
+        .card h2 { margin-top: 0; color: #bb86fc; }
+        button { background-color: #03dac6; color: #000; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; margin-bottom: 15px; transition: background 0.2s; }
+        button:hover { background-color: #01a394; }
+        .result { background-color: #000; padding: 15px; border-radius: 5px; min-height: 120px; font-family: monospace; font-size: 14px; border: 1px solid #444; }
+        .machine-id { color: #ffeb3b; font-weight: bold; font-size: 16px; display: block; margin: 10px 0; padding: 5px; background: rgba(255, 235, 59, 0.1); border-left: 4px solid #ffeb3b; }
+        .error { color: #cf6679; font-weight: bold; }
+        .btn-produtos { background-color: #ff7597; }
+        .btn-produtos:hover { background-color: #d1506f; }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 Central de Controle - Infraestrutura Docker</h1>
+    
+    <div class="container">
+        <div class="card">
+            <h2>👥 Setor de Usuários</h2>
+            <p>Acessa o container isolado de usuários.</p>
+            <button onclick="fetchData('/usuarios', 'res-usuarios')">Requisitar Usuários</button>
+            <div id="res-usuarios" class="result">Aguardando requisição...</div>
+        </div>
+
+        <div class="card">
+            <h2>📦 Setor de Produtos</h2>
+            <p>Acessa o cluster de produtos (Load Balanced).</p>
+            <button class="btn-produtos" onclick="fetchData('/produtos', 'res-produtos')">Requisitar Produtos</button>
+            <div id="res-produtos" class="result">Aguardando requisição...</div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchData(route, elementId) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = '<span style="color: #888;">Processando requisição no Gateway...</span>';
+            
+            try {
+                const response = await fetch(route);
+                
+                if (!response.ok) {
+                    if(response.status === 503) {
+                        throw new Error("🚨 BLOQUEADO PELO NGINX!<br>Proteção DDoS (Rate Limit) ativada.");
+                    }
+                    throw new Error(`Erro do Servidor: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                el.innerHTML = `
+                    <span style="color: #00ffcc;">✔️ ${data.status}</span><br>
+                    Origem: ${data.servico}<br>
+                    <span class="machine-id">💻 Container ID: ${data.maquina_que_respondeu}</span>
+                    <b>Retorno:</b> ${data.dados.join(', ')}
+                `;
+            } catch (error) {
+                el.innerHTML = `<span class="error">${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
