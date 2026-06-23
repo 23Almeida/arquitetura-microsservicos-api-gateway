@@ -23,7 +23,7 @@ services:
       - "8080:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./frontend:/usr/share/nginx/html:ro # Mapeia a pasta do front-end
+      - ./Frontend:/usr/share/nginx/html:ro # Mapeia a pasta do front-end
     depends_on:
       - servico-usuarios
       - servico-produtos
