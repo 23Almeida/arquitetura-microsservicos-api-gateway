@@ -66,6 +66,8 @@ O frontend tambem e servido pelo proprio Nginx. Ao acessar `http://localhost:808
 |   `-- index.html
 |-- nginx/
 |   `-- nginx.conf
+|-- scripts/
+|   `-- configurar-zabbix.ps1
 |-- servico-usuarios/
 |   |-- app.py
 |   |-- Dockerfile
@@ -235,6 +237,45 @@ Dashboard Zabbix:
 
 ```text
 http://localhost:8081
+```
+
+## Configurar o Monitoramento no Zabbix
+
+O Zabbix Appliance guarda suas configuracoes dentro do container. Se o ambiente for derrubado com `docker compose down` ou `docker-compose down`, o container pode ser removido e a configuracao criada manualmente pode ser perdida.
+
+Para facilitar a apresentacao, este projeto possui um script que recria automaticamente:
+
+- Grupo `Web servers`.
+- Host `api-gateway`.
+- Interface Agent em `127.0.0.1`.
+- Web Scenario `Saude do API Gateway`.
+- Step `Testar Rota Produtos`.
+- URL monitorada `http://api-gateway/produtos`.
+- Status esperado `200`.
+
+Depois de subir os containers, execute no PowerShell:
+
+```powershell
+.\scripts\configurar-zabbix.ps1
+```
+
+O script usa o login padrao do Zabbix:
+
+```text
+Usuario: Admin
+Senha: zabbix
+```
+
+Depois de cerca de 1 minuto, acesse:
+
+```text
+http://localhost:8081
+```
+
+E veja o resultado em:
+
+```text
+Monitoring -> Hosts -> api-gateway -> Web
 ```
 
 ## Como Testar pelo Terminal
