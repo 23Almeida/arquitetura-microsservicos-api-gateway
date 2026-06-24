@@ -130,6 +130,8 @@ Pasta: `servico-produtos`
 
 Tecnologia: Python + Flask
 
+Legenda: Flask: Flask é um microframework web escrito em Python, famoso por ser leve, flexível e fácil de aprender. Ele fornece os componentes essenciais para construir sites, aplicações web e APIs
+
 Rotas:
 
 ```text
