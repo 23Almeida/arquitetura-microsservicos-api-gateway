@@ -104,6 +104,8 @@ Pasta: `servico-usuarios`
 
 Tecnologia: Python + Flask
 
+> **Legenda - O que e Flask?** Flask e um microframework web do Python usado para criar APIs e sistemas web de forma simples e rapida. Neste projeto, ele recebe as requisicoes encaminhadas pelo Nginx e devolve respostas em formato JSON.
+
 Rotas:
 
 ```text
